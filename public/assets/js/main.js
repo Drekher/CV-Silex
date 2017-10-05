@@ -1,73 +1,95 @@
-(function ($) {
-    $(document).on('ready', function () {
+/*
+	Strongly Typed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+*/
 
-        "use strict";
-        /**Preload**/
-        $('#page-loader').delay(600).fadeOut(400, function () {
-            $('body').fadeIn();
-        });
+(function($) {
 
-        /**Menu Mobile**/
-        $('.menu-icon').on('click', function () {
-            $('body').toggleClass("open-menu");
-        });
-        $('.open-submenu').on('click', function () {
-            var submenu = $(this).parents("li").find("ul");
-            if ($(submenu).is(":visible")) {
-                $(submenu).slideUp();
-                $(this).removeClass("open-submenu-active");
-            }
-            else {
-                $(submenu).slideDown();
-                $(this).addClass("open-submenu-active");
-            }
-        });
+	skel
+		.breakpoints({
+			desktop: '(min-width: 737px)',
+			tablet: '(min-width: 737px) and (max-width: 1200px)',
+			mobile: '(max-width: 736px)'
+		})
+		.viewport({
+			breakpoints: {
+				tablet: {
+					width: 1080
+				}
+			}
+		});
 
-        /**Search Box**/
-        $('body').on('click', function () {
-            if ($('.search-icon').hasClass("show-search")) {
-                $('.search-icon').toggleClass("show-search");
-            }
-        });
-        $('.search-icon-inner').on('click', function (e) {
-            e.stopPropagation()
-            $('.search-icon').toggleClass("show-search");
-        });
-        $('.search-box').on('click', function (e) {
-            e.stopPropagation();
-        });
+	$(function() {
 
-        /**Sportlight slider**/
-        $('.owl-spotlight').owlCarousel({
-            loop: true,
-            nav: true,
-            items: 1,
-            mouseDrag: false,
-            navText: ["<i class='fa fa-angle-left'></i>", "<i class='fa fa-angle-right'></i>"]
-        });
+		var	$window = $(window),
+			$body = $('body');
 
-        /**Review slider**/
-        $('.owl-review').owlCarousel({
-            loop: true,
-            nav: true,
-            items: 1,
-            mouseDrag: false,
-            navText: ["<i class='fa fa-angle-left'></i>", "<i class='fa fa-angle-right'></i>"]
-        });
+		// Disable animations/transitions until the page has loaded.
+			$body.addClass('is-loading');
 
-        /**Review slider**/
-        $('.owl-special').owlCarousel({
-            loop: true,
-            nav: false,
-            dots: false,
-            autoplay: true,
-            items: 1,
-            mouseDrag: false,
-        });
+			$window.on('load', function() {
+				$body.removeClass('is-loading');
+			});
 
-        /**Match Height Review Item**/
-        if ($('.reviews-item').length) {
-            $('.reviews-item').matchHeight();
-        }
-    });
+		// Fix: Placeholder polyfill.
+			$('form').placeholder();
+
+		// Prioritize "important" elements on mobile.
+			skel.on('+mobile -mobile', function() {
+				$.prioritize(
+					'.important\\28 mobile\\29',
+					skel.breakpoint('mobile').active
+				);
+			});
+
+		// CSS polyfills (IE<9).
+			if (skel.vars.IEVersion < 9)
+				$(':last-child').addClass('last-child');
+
+		// Dropdowns.
+			$('#nav > ul').dropotron({
+				mode: 'fade',
+				noOpenerFade: true,
+				hoverDelay: 150,
+				hideDelay: 350
+			});
+
+		// Off-Canvas Navigation.
+
+			// Title Bar.
+				$(
+					'<div id="titleBar">' +
+						'<a href="#navPanel" class="toggle"></a>' +
+					'</div>'
+				)
+					.appendTo($body);
+
+			// Navigation Panel.
+				$(
+					'<div id="navPanel">' +
+						'<nav>' +
+							$('#nav').navList() +
+						'</nav>' +
+					'</div>'
+				)
+					.appendTo($body)
+					.panel({
+						delay: 500,
+						hideOnClick: true,
+						hideOnSwipe: true,
+						resetScroll: true,
+						resetForms: true,
+						side: 'left',
+						target: $body,
+						visibleClass: 'navPanel-visible'
+					});
+
+			// Fix: Remove navPanel transitions on WP<10 (poor/buggy performance).
+				if (skel.vars.os == 'wp' && skel.vars.osVersion < 10)
+					$('#titleBar, #navPanel, #page-wrapper')
+						.css('transition', 'none');
+
+	});
+
 })(jQuery);
